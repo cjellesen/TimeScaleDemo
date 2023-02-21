@@ -8,14 +8,13 @@ namespace Infrastructure;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<TimeScaleDbContext>(options => options
-            .UseLazyLoadingProxies()
-            .UseNpgsql(configuration.GetConnectionString("DefaultConnection"), 
-                builder => builder.MigrationsAssembly(typeof(TimeScaleDbContext).Assembly.FullName)));
+        services.AddDbContext<TimeScaleDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         
         services.AddScoped<ITimeScaleDbContext>(provider => provider.GetRequiredService<TimeScaleDbContext>());
+        services.AddScoped<TimeScaleDbContextInitializer>();
         return services;
     }
 }
