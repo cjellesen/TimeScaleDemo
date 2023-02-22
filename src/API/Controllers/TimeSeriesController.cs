@@ -22,4 +22,16 @@ public class TimeSeriesController : ControllerBase
     {
         return await _context.GetAllSensors();
     }
+
+    [HttpGet(Name = "GetAllMeasurementsForSensor")]
+    public async Task<IEnumerable<Measurement>> GetAllMeasurementsForSensor(Sensor sensor)
+    {
+        return await _context.GetAllMeasurements(sensor);
+    }
+    
+    [HttpGet(Name = "GetAllMeasurementsForSensor")]
+    public async Task<IEnumerable<Measurement>> GetAllMeasurementsForSensor(Sensor sensor, DateTime from, DateTime to)
+    {
+        return await _context.GetAllMeasurements(sensor, from, to);
+    }
 }

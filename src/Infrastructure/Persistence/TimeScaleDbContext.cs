@@ -7,11 +7,13 @@ namespace Infrastructure.Persistence;
 
 public class TimeScaleDbContext : DbContext, ITimeScaleDbContext
 {
+    public readonly string SchemaName = "TimeScale";
+    
     public virtual DbSet<SensorCollection> SensorCollections { get; set; }
     public virtual DbSet<Sensor> Sensors { get; set; }
     public virtual DbSet<Measurement> Measurements { get; set; }
-    public readonly string SchemaName = "TimeScale";
-
+    public virtual DbSet<UnitTransformation> UnitTransformations { get; set; }
+    
     public TimeScaleDbContext()
         : base(GetNpSqlOptions(""))
     { }
@@ -22,7 +24,17 @@ public class TimeScaleDbContext : DbContext, ITimeScaleDbContext
 
     public async Task<IEnumerable<Sensor>> GetAllSensors()
     {
-        return Sensors;
+        return await Sensors.ToListAsync();
+    }
+
+    public async Task<IEnumerable<Measurement>> GetAllMeasurements(Sensor sensor)
+    {
+        return await Measurements.Where(e => e.Id == sensor.Id).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Measurement>> GetAllMeasurements(Sensor sensor, DateTime from, DateTime to)
+    {
+        return await Measurements.Where(e => e.Id == sensor.Id && e.Time >= from && e.Time < to).ToListAsync();
     }
     
     public static DbContextOptions GetNpSqlOptions(string connectionString)
